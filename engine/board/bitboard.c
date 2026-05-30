@@ -1,0 +1,107 @@
+
+#include <stdio.h>
+
+#include "bitboard.h"
+
+void init_board(board_state* b) {
+
+    b->can_castle[0] = true;
+    b->can_castle[1] = true;
+    b->turn = WHITE;
+
+    for(size_t i = 0;i < 2;i++) {
+        for(size_t j = 0;j < 6;j++) {
+            b->pieces[i][j] = 0;
+        } 
+    }
+
+    init_bishops(b);
+    init_knights(b);
+    init_rooks(b);
+    init_queens(b);
+    init_kings(b);
+    init_pawns(b);  
+
+    print_pawns(b);
+}
+
+void print_pawns(board_state* b) {
+
+    uint64_t pawns = b->pieces[WHITE][PAWN];
+
+    for(int i = 63;i >= 0;i--) {
+        uint64_t mask = (uint64_t) 1 << i;
+
+        if(pawns & mask) {
+            printf("1");
+        }else {
+            printf("0");
+        }
+
+        if(i % 8 == 0) {
+            printf("\n");
+        }
+    }
+    
+}
+
+void init_bishops(board_state* b) {
+
+    b->pieces[WHITE][BISHOP] = (1ULL << 2);
+    b->pieces[WHITE][BISHOP] = (1ULL << 5);
+
+    b->pieces[BLACK][BISHOP] = (1ULL << 2);
+    b->pieces[BLACK][BISHOP] = (1ULL << 5);
+
+}
+
+void init_knights(board_state* b) {
+
+    b->pieces[WHITE][KNIGHT] = (1ULL << 1);
+    b->pieces[WHITE][KNIGHT] = (1ULL << 6);
+
+    b->pieces[BLACK][KNIGHT] = (1ULL << 1);
+    b->pieces[BLACK][KNIGHT] = (1ULL << 6);
+
+}
+
+void init_rooks(board_state* b) {
+
+    b->pieces[WHITE][ROOK] = (1ULL << 0);
+    b->pieces[WHITE][ROOK] = (1ULL << 7);
+
+    b->pieces[BLACK][ROOK] = (1ULL << 0);
+    b->pieces[BLACK][ROOK] = (1ULL << 7);
+
+}
+
+void init_queens(board_state* b) {
+
+    b->pieces[WHITE][QUEEN] = (1ULL << 4);
+    b->pieces[BLACK][QUEEN] = (1ULL << 4);
+
+}
+
+void init_kings(board_state* b) {
+
+    b->pieces[WHITE][KING] = (1ULL << 3);
+    b->pieces[BLACK][KING] = (1ULL << 3);
+
+}
+
+void init_pawns(board_state* b) {
+    
+    // 11111111 00000000
+    uint16_t pawn_mask = 0XFF00;
+
+    b->pieces[WHITE][PAWN] |= pawn_mask; 
+    b->pieces[BLACK][PAWN] |= pawn_mask;
+
+}
+
+
+
+
+
+
+
