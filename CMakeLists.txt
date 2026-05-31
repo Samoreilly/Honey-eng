@@ -8,5 +8,7 @@ add_executable(
     honey
     main.c 
     engine/board/bitboard.c
+    engine/user/input.c
+    engine/util.c
 )
 

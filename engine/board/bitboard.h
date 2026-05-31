@@ -3,10 +3,11 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-typedef enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING } PIECE;
+typedef enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING, NONE} PIECE;
 typedef enum { WHITE, BLACK } COLOR;
 
-
+#define PIECES 6
+#define COLORS 2
 
 typedef struct {
 
@@ -16,8 +17,6 @@ typedef struct {
     //en passant
 
 } board_state;
-
-
 
 void init_board(board_state* b);
 void init_bishops(board_state* b);

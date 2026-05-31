@@ -83,8 +83,8 @@ void init_pawns(board_state* b) {
 void view_board(board_state* b) {
     uint64_t board = 1ULL;
 
-    for(int i = 0;i < 2;i++) {
-        for(int j = 0;j < 6;j++) {
+    for(int i = 0;i < COLORS;i++) {
+        for(int j = 0;j < PIECES;j++) {
             board |= b->pieces[i][j];
         }
     }
