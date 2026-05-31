@@ -22,7 +22,10 @@ void init_board(board_state* b) {
     init_kings(b);
     init_pawns(b);  
 
-    print(b);
+    print(b->pieces[WHITE][QUEEN]);
+
+    view_board(b);
+
 }
 
 void init_bishops(board_state* b) {
@@ -70,25 +73,35 @@ void init_kings(board_state* b) {
 
 void init_pawns(board_state* b) {
     
-    // 11111111 00000000
-    uint16_t pawn_mask = 0XFF00;
+    uint64_t white_pawn_mask = 0xFF00;
+    uint64_t black_pawn_mask = 0xFF000000000000;
 
-    b->pieces[WHITE][PAWN] |= pawn_mask; 
-    b->pieces[BLACK][PAWN] |= pawn_mask;
-
+    b->pieces[WHITE][PAWN] |= white_pawn_mask; 
+    b->pieces[BLACK][PAWN] |= black_pawn_mask;
 }
 
-void print(board_state* b) {
+void view_board(board_state* b) {
+    uint64_t board = 1ULL;
 
-    uint64_t board = b->pieces[WHITE][QUEEN];
-    
+    for(int i = 0;i < 2;i++) {
+        for(int j = 0;j < 6;j++) {
+            board |= b->pieces[i][j];
+        }
+    }
+
+    printf("\nFull Board\n\n");
+    print(board);
+}
+
+void print(uint64_t piece) {
+
     for(int rank = 7; rank >= 0; rank--) {
         for(int file = 0; file < 8; file++) {
         
             int square = rank * 8 + file;
             uint64_t mask = 1ULL << square;
             
-            printf("%c", (board & mask) ? '1' : '0');
+            printf("%c", (piece & mask) ? '1' : '0');
         }
         printf("\n");
     }

@@ -27,8 +27,8 @@ void init_pawns(board_state* b);
 void init_kings(board_state* b);
 void init_queens(board_state* b);
 
-
-void print(board_state* b);
+void view_board(board_state* b);
+void print(uint64_t piece);
 
 
 
