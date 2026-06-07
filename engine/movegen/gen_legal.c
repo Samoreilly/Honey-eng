@@ -13,6 +13,7 @@ const uint64_t NOT_H_FILE  = 0x7F7F7F7F7F7F7F7FULL;
 
 const uint64_t NOT_AB_FILE = 0xFCFCFCFCFCFCFCFCULL;
 const uint64_t NOT_HG_FILE = 0x3F3F3F3F3F3F3F3FULL;
+const uint64_t TOP_RANK = 0xFF00000000000000;
 
 #define KNIGHT_MOVES 8
 const int KNIGHT_OFFSETS[8] = {
@@ -27,6 +28,17 @@ const int KNIGHT_OFFSETS[8] = {
 };
 
 typedef void (*move_gen)(board_state*, uint64_t);
+typedef uint64_t* (*precompute) (void);
+
+const precompute precomp_table[PIECES + 1] = {
+    precomp_pawns,
+    precomp_knights,
+    precomp_bishops,
+    precomp_rooks,
+    precomp_queens,
+    precomp_king,
+    precomp_no_piece
+};
 
 const move_gen generator_table[8] = {
     /* gen_pawn, */
@@ -91,6 +103,24 @@ void gen_rook(board_state* board, uint64_t full_board) {
 
 }
 
+
+
+uint64_t** precomp() {
+
+    uint64_t** precomp = calloc(PIECES, sizeof(uint64_t*));
+    if(!precomp) {
+        printf("Cannot precompute\n");
+        return NULL;
+    }
+
+    for(size_t i = 0;i < PIECES;i++) {
+        precomp[i] = precomp_table[i]();
+    }
+
+    return precomp;
+
+}
+
 /*
     Precompute all pseudo-legal moves
     https://www.chessprogramming.org/Knight_Pattern
@@ -101,7 +131,7 @@ uint64_t* precomp_knights() {
     uint64_t* precomp_knight = (uint64_t*) malloc(sizeof(uint64_t) * 64);
     
     //compute for all 64 squares
-    for(size_t square = 0; square < 64;square++) {
+    for(size_t square = 0;square < 64;square++) {
         
         uint64_t attacks = 0;  
         uint64_t knight = 1ULL << square;
@@ -125,7 +155,51 @@ uint64_t* precomp_knights() {
     return precomp_knight;
 
 }
+
+uint64_t* precomp_pawns() {
+
+    uint64_t* precomp_pawns = (uint64_t*) calloc(64, sizeof(uint64_t));
+    
+    for(size_t square = 0; square < 64;square++) {
+        
+        uint64_t attacks = 0;
+        uint64_t pawn = 1ULL << square;
+
+        //stop computing when at top rank
+        if(pawn & TOP_RANK) {
+            break;
+        }
+
+        //7 is north east
+
+        //check if A file, if not compute NE square
+        if(pawn & NOT_A_FILE) attacks |= (pawn << 7);
+        attacks |= (pawn << 8);
+        if(pawn & NOT_H_FILE) attacks |= (pawn << 9);   
+
+        precomp_pawns[square] = attacks;
+
+    }
+
+    return precomp_pawns;
+
+}
  
+uint64_t* precomp_rooks() {
+}
+
+uint64_t* precomp_king() {
+}
+
+uint64_t* precomp_bishops() {
+}
+
+uint64_t* precomp_queens() {
+}
+
+uint64_t* precomp_no_piece() {
+}
+
 void gen_knight(board_state *board) {
 
 }

@@ -35,15 +35,18 @@ int main() {
     if(square & (1ULL << knight_mov->to)) {
         printf("Valid knight move");
     }
+    
 
-        
-    /* for(int i = 0;i < 64;i++) { */
-    /*     printf("Knight attacks for square %i\n", i); */
-    /*     print(precomp_knight[i]); */
-    /*  */
-    /*     printf("\n"); */
-    /* } */
+    uint64_t* precomp_pawn = precomp_pawns();
+ 
+    for(int i = 0;i < 64;i++) {
+        printf("Pawn attacks for square %i\n", i);
+        print(precomp_pawn[i]);
 
+        printf("\n");
+    }
+
+    free(b);
         
     return 0;
 }

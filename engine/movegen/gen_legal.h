@@ -31,7 +31,15 @@ void gen_no_piece(board_state* board);
     Gives us all possible attacks for Rook's current position
 */
 uint64_t rook_attack_mask(uint64_t board, uint64_t full_board);
+
+uint64_t** precomp();
 uint64_t* precomp_knights();
+uint64_t* precomp_pawns();
+uint64_t* precomp_bishops();
+uint64_t* precomp_rooks();
+uint64_t* precomp_king();
+uint64_t* precomp_queens();
+uint64_t* precomp_no_piece();
 
 uint64_t get_piece_square(uint64_t bitboard);
 
