@@ -8,12 +8,13 @@ add_executable(
     honey
     main.c 
     engine/board/bitboard.c
+    engine/board/precomp.c
     engine/movegen/gen_legal.c
     engine/user/input.c
     engine/util.c
+
 )
 
 
-target_compile_options(honey PRIVATE -Wall -Wextra -fsanitize=address -fno-omit-frame-pointer -g)
-target_link_options(honey PRIVATE -fsanitize=address)
+target_compile_options(honey PRIVATE -Wall -Wextra)
 

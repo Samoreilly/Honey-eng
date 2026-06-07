@@ -17,7 +17,9 @@ typedef enum { WHITE, BLACK } COLOR;
 #define N_KINGS   1
 
 typedef struct {
-    uint64_t* precomp_attacks[PIECES];
+    
+    //accessed [COLOR][PIECE][SQUARE] 
+    uint64_t*** precomp_attacks;
     uint64_t pieces[2][6];
     COLOR turn;
     bool can_castle[2]; //accessed through COLOR. 0 - white, 1 - black
