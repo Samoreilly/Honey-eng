@@ -9,6 +9,13 @@ typedef enum { WHITE, BLACK } COLOR;
 #define PIECES 6
 #define COLORS 2
 
+#define N_PAWNS   8
+#define N_ROOKS   2
+#define N_KNIGHTS 2
+#define N_BISHOPS 2
+#define N_QUEENS  1
+#define N_KINGS   1
+
 typedef struct {
 
     uint64_t pieces[2][6];
@@ -29,5 +36,6 @@ void init_queens(board_state* b);
 void view_board(board_state* b);
 void print(uint64_t piece);
 
+uint64_t get_full_board(board_state* board);
 
 

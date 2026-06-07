@@ -4,9 +4,6 @@
 #include "../board/bitboard.h"
 
 
-/*
-   Create a mask using @param square to find which piece-type occupies that square
-*/
 PIECE get_piece(board_state* board, int square) {
 
     uint64_t mask = (1ULL << square);
@@ -21,13 +18,6 @@ PIECE get_piece(board_state* board, int square) {
     return NONE;
 }
 
-
-
-
-
-/*
-    Returns the corresponding file number (0-based for bits) for the file name a = 0, h = 7
-*/
 int get_file_index(char file) {
 
     switch(file) {
@@ -52,9 +42,6 @@ int get_file_index(char file) {
     }
 }
 
-/*
-    Returns a struct containing FROM and TO squares 0-based for bits
-*/
 move* get_squares(char* input) {
     int len = strlen(input);
     if(len < 4 || len > 4) return NULL;

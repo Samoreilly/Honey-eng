@@ -107,6 +107,19 @@ void print(uint64_t piece) {
     }
 }
 
+uint64_t get_full_board(board_state* b) {
+    
+    uint64_t board = 1ULL;
+
+    for(int i = 0;i < COLORS;i++) {
+        for(int j = 0;j < PIECES;j++) {
+            board |= b->pieces[i][j];
+        }
+    }
+
+    return board;
+}
+
 
 
 
