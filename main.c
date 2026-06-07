@@ -36,12 +36,12 @@ int main() {
         printf("Valid knight move");
     }
     
-
-    uint64_t* precomp_pawn = precomp_pawns();
+    
+    uint64_t* precomp_kin = precomp_king();
  
     for(int i = 0;i < 64;i++) {
-        printf("Pawn attacks for square %i\n", i);
-        print(precomp_pawn[i]);
+        printf("King attacks for square %i\n", i);
+        print(precomp_kin[i]);
 
         printf("\n");
     }
