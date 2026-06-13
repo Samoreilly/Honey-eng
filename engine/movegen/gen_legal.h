@@ -1,12 +1,15 @@
 #pragma once
 
 #include "../user/input.h"
+#include "../board/bitboard.h"
+
 /*
    Precompute all 218 legal moves for current position into a set
    Later used to check if users move is in that set
 */
 
 #define likely(x) __builtin_expect(!!(x), 1)
+
 
 /*
    Struct will contain all legal moves, 218 is the theoretical limit for a single position

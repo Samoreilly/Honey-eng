@@ -18,6 +18,23 @@ typedef enum { WHITE, BLACK } COLOR;
 #define N_KINGS   1
 
 /*
+ Bit masks for multiple purposes, validating pieces positions in movegen & pre-computation
+*/
+
+#define NOT_A_FILE  0xFEFEFEFEFEFEFEFEULL
+#define NOT_B_FILE  0xFDFDFDFDFDFDFDFDULL
+#define NOT_G_FILE  0xBFBFBFBFBFBFBFBFULL
+#define NOT_H_FILE  0x7F7F7F7F7F7F7F7FULL
+
+#define NOT_AB_FILE 0xFCFCFCFCFCFCFCFCULL
+#define NOT_HG_FILE 0x3F3F3F3F3F3F3F3FULL
+
+#define H_FILE   0x8080808080808080ULL
+#define A_FILE   0x0101010101010101ULL
+#define TOP_RANK 0xFF00000000000000ULL
+#define BOT_RANK 0x00000000000000FFULL
+
+/*
    Input formatted as e2e4, e1g1 for castling etc 
 */
 

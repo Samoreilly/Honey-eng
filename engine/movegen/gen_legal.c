@@ -3,11 +3,6 @@
 #include <stdint.h>
 
 
-const uint64_t H_FILE   = 0x8080808080808080ULL;
-const uint64_t A_FILE   = 0x0101010101010101ULL;
-const uint64_t TOP_RANK = 0xFF00000000000000ULL;
-const uint64_t BOT_RANK = 0xFFULL;
-
 #define DIRECTIONS 4
 int directions[4] = {-8, 8, -1, 1};
 
@@ -292,9 +287,9 @@ void gen_queen(board_state* board) {
 
 }
 
-/* void gen_no_piece(board_state board) { */
-/*     printf("Failed"); */
-/* } */
+void gen_no_piece(board_state* board) {
+    printf("NO PIECE FOUND [gen_legal.c gen_no_piece(board_state* board)]");
+}
 
 void add_legal(board_state* board, uint64_t piece, uint64_t source) {
 

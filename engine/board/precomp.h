@@ -1,5 +1,6 @@
 #include <inttypes.h>
 
+#include "bitboard.h"
 
 uint64_t*** precomp();
 

@@ -4,17 +4,6 @@
 #include "precomp.h"
 #include "bitboard.h"
 
-
-const uint64_t NOT_A_FILE  = 0xFEFEFEFEFEFEFEFEULL;
-const uint64_t NOT_B_FILE  = 0xFDFDFDFDFDFDFDFDULL;
-const uint64_t NOT_G_FILE  = 0xBFBFBFBFBFBFBFBFULL;
-const uint64_t NOT_H_FILE  = 0x7F7F7F7F7F7F7F7FULL;
-
-const uint64_t NOT_AB_FILE = 0xFCFCFCFCFCFCFCFCULL;
-const uint64_t NOT_HG_FILE = 0x3F3F3F3F3F3F3F3FULL;
-const uint64_t TOP_RANK = 0xFF00000000000000;
-const uint64_t BOTTOM_RANK = 0xFF;
-
 uint64_t*** precomp() {
 
     uint64_t*** precomp = calloc(COLORS, sizeof(uint64_t**));
@@ -151,18 +140,18 @@ uint64_t* precomp_king() {
         if(pawn & NOT_A_FILE) {
             if(!(pawn & TOP_RANK)) attacks |= (pawn << 7);//NW
             attacks |= (pawn >> 1);//W
-            if(!(pawn & BOTTOM_RANK)) attacks |= (pawn >> 9);//SW
+            if(!(pawn & BOT_RANK)) attacks |= (pawn >> 9);//SW
         }
        
         //right side
         if(pawn & NOT_H_FILE) {
             if(!(pawn & TOP_RANK)) attacks |= (pawn << 9);//NE
             attacks |= (pawn << 1);//E
-            if(!(pawn & BOTTOM_RANK)) attacks |= (pawn >> 7);//SE
+            if(!(pawn & BOT_RANK)) attacks |= (pawn >> 7);//SE
         }
 
         if(!(pawn & TOP_RANK)) attacks |= (pawn << 8);
-        if(!(pawn & BOTTOM_RANK)) attacks |= (pawn >> 8);
+        if(!(pawn & BOT_RANK)) attacks |= (pawn >> 8);
 
         
         precomp[square] = attacks;

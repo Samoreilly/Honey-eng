@@ -108,7 +108,7 @@ void print(uint64_t piece) {
 
 uint64_t get_full_board(board_state* b) {
     
-    uint64_t board = 1ULL;
+    uint64_t board = 0;
 
     for(int i = 0;i < COLORS;i++) {
         for(int j = 0;j < PIECES;j++) {
@@ -121,7 +121,7 @@ uint64_t get_full_board(board_state* b) {
 
 uint64_t get_opposite_board(board_state* board, COLOR clr) {
 
-    uint64_t b = 1ULL;
+    uint64_t b = 0;
 
     for(int i = 0;i < PIECES;i++) {
         b |= board->pieces[clr][i];
