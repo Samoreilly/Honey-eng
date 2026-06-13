@@ -22,8 +22,8 @@ typedef enum { WHITE, BLACK } COLOR;
 */
 
 typedef struct move {
-    int from;
-    int to;
+    uint32_t from;
+    uint32_t to;
 } move;
 
 typedef struct legal_list {

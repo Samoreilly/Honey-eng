@@ -123,20 +123,49 @@ void gen_pawn(board_state* board) {
 
 }
 
-void add_legal(board_state* board, uint64_t piece, uint64_t source) {
-
-    while(piece) {
-        int square = get_piece_square(piece);
-
-        board->legal_moves.legal[board->legal_moves.legal_idx++] = (struct move){source, square};
-        
-        piece &= ~(1ULL << square);
-    }
-
-}
-
 
 void gen_knight(board_state* board) {
+    
+    uint64_t knight     = board->pieces[board->turn][KNIGHT]; 
+    uint64_t opposition = get_opposite_board(board, !board->turn);
+    uint64_t full_board = get_full_board(board);
+
+    while(knight) {
+    
+        int square = get_piece_square(knight);
+        uint64_t precomp_knight = board->precomp_attacks[board->turn][KNIGHT][square];
+    
+        uint64_t unoccupied_moves = ~full_board;//unoccupied squares
+        unoccupied_moves |= opposition;//add enemy squares you can capture
+
+        uint64_t valid_moves = precomp_knight & unoccupied_moves;
+        add_legal(board, valid_moves, square);
+
+        knight &= ~(1ULL << square);
+
+    }
+}
+
+//TODO: unsure where king checking will be in pipeline, this is a reminder to do that
+void gen_king(board_state* board) {
+
+    uint64_t king       = board->pieces[board->turn][KING];
+    uint64_t opposition = get_opposite_board(board, !board->turn);
+    uint64_t full_board = get_full_board(board);
+    
+    uint64_t curr_color_board = full_board & ~(opposition);
+
+    while(king) {
+        int square = get_piece_square(king);
+        uint64_t precomp_king = board->precomp_attacks[board->turn][KING][square];
+        
+        //excludes curr color board
+        uint64_t moves = precomp_king & ~(curr_color_board);
+        
+        add_legal(board, moves, square);
+
+        king &= ~(1ULL << square);
+    }
 
 }
 
@@ -159,4 +188,15 @@ void gen_knight(board_state* board) {
 /* void gen_no_piece(board_state board) { */
 /*     printf("Failed"); */
 /* } */
+
+void add_legal(board_state* board, uint64_t piece, uint64_t source) {
+
+    while(piece) {
+   
+        uint32_t square = get_piece_square(piece);
+        board->legal_moves.legal[board->legal_moves.legal_idx++] = (struct move){source, square};
+        piece &= ~(1ULL << square);
+    }
+
+}
 
