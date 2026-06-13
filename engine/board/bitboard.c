@@ -1,6 +1,5 @@
 
 #include <stdio.h>
-
 #include "bitboard.h"
 
 void init_board(board_state* b) {
@@ -21,7 +20,7 @@ void init_board(board_state* b) {
     init_queens(b);
     init_kings(b);
     init_pawns(b);  
-
+    
     print(b->pieces[WHITE][QUEEN]);
 
     view_board(b);
@@ -119,6 +118,23 @@ uint64_t get_full_board(board_state* b) {
 
     return board;
 }
+
+uint64_t get_opposite_board(board_state* board, COLOR clr) {
+
+    uint64_t b = 1ULL;
+
+    for(int i = 0;i < PIECES;i++) {
+        b |= board->pieces[clr][i];
+    }
+
+    return b;
+
+}
+
+
+
+
+
 
 
 

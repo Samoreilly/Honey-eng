@@ -20,7 +20,7 @@ const int KNIGHT_OFFSETS[8] = {
 
 typedef void (*move_gen)(board_state*, uint64_t);
 const move_gen generator_table[8] = {
-    /* gen_pawn, */
+    gen_pawn,
     /* gen_knight, */
     /* gen_bishop, */
     gen_rook
@@ -82,9 +82,61 @@ void gen_rook(board_state* board, uint64_t full_board) {
 
 }
 
+void gen_pawn(board_state* board) {
+
+    const uint64_t TOP_RANK = 0xFF00000000000000;
+    const uint64_t BOTTOM_RANK = 0xFF;
+
+    uint64_t pawns = board->pieces[board->turn][PAWN];
+    uint64_t enemy = get_opposite_board(board, !board->turn); 
+    uint64_t full_board = get_full_board(board);
+
+    const int step = board->turn == WHITE ? 8 : -8;
+    const uint64_t rank = board->turn == WHITE ? TOP_RANK : BOTTOM_RANK;
+
+    //TODO: add array of counters to track number of pieces per piece-type
+    while(pawns) {
+
+        uint64_t square = get_piece_square(pawns);
+        uint64_t precomp_pawn = board->precomp_attacks[board->turn][PAWN][square];
+      
+        //pseudo-valid attacks for pawn
+        uint64_t move = precomp_pawn & enemy;
+        uint64_t pawn_bb = 1ULL << square;
+
+        //check if bottom or top rank depending on color
+        if(!(pawn_bb & rank)) {
+            
+            //checks if pawn push is occupied
+            uint64_t push = board->turn == WHITE ? (pawn_bb << 8) : (pawn_bb >> 8);
+            if(!(push & full_board)) {
+                move |= push;
+            }
+        }
+
+        add_legal(board, move, square);
+    
+        //clears bit to continue looping through board, get_piece_square() handles this
+        pawns &= ~(1ULL << square);
+
+    }
+
+}
+
+void add_legal(board_state* board, uint64_t piece, uint64_t source) {
+
+    while(piece) {
+        int square = get_piece_square(piece);
+
+        board->legal_moves.legal[board->legal_moves.legal_idx++] = (struct move){source, square};
+        
+        piece &= ~(1ULL << square);
+    }
+
+}
 
 
-void gen_knight(board_state *board) {
+void gen_knight(board_state* board) {
 
 }
 

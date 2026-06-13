@@ -1,7 +1,5 @@
-#include <bits/time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "engine/board/bitboard.h"
 #include "engine/user/input.h"
@@ -15,15 +13,10 @@ int main() {
     board_state* b = malloc(sizeof(board_state));
     init_board(b);
 
-    struct timespec start, end;
-    
-    clock_gettime(CLOCK_MONOTONIC, &start);
     //precomputes knight, pawn and king moves
     b->precomp_attacks = precomp();
-
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
     char* knight = "b1c3";
+
     struct move* knight_mov = get_squares(knight);
     
     PIECE piece_to = get_piece(b, knight_mov->from);
@@ -51,12 +44,6 @@ int main() {
         print(precomp_kin[i]);
         printf("\n");
     }
-    
-    long seconds = end.tv_sec - start.tv_sec;
-    long nanoseconds = end.tv_nsec - start.tv_nsec;
-    double elapsed = seconds + nanoseconds * 1e-9;
-
-    printf("Elapsed time: %.6f seconds\n", elapsed);
 
     return 0;
 }

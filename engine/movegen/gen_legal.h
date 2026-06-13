@@ -11,10 +11,6 @@
 /*
    Struct will contain all legal moves, 218 is the theoretical limit for a single position
 */
-typedef struct legal {
-    move legal[250];
-} legal;
-
 void gen(board_state* board);
 
 void gen_knight(board_state* board);
@@ -25,6 +21,7 @@ void gen_rook(board_state* board, uint64_t full_board);
 void gen_pawn(board_state* board);
 void gen_no_piece(board_state* board);
 
+void add_legal(board_state* board, uint64_t piece, uint64_t source);
 
 /*
     Gives us all possible attacks for Rook's current position

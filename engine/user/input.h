@@ -6,15 +6,6 @@
 
 #include "../board/bitboard.h"
 
-/*
-   Input formatted as e2e4, e1g1 for castling etc 
-*/
-
-typedef struct move {
-    int from;
-    int to;
-} move;
-
 
 /*
    Create a mask using @param square to find which piece-type occupies that square
