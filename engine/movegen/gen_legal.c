@@ -153,7 +153,7 @@ void gen_king(board_state* board) {
     uint64_t opposition = get_opposite_board(board, !board->turn);
     uint64_t full_board = get_full_board(board);
     
-    uint64_t curr_color_board = full_board & ~(opposition);
+    uint64_t curr_color_board = full_board & ~opposition;
 
     while(king) {
         int square = get_piece_square(king);
@@ -161,10 +161,66 @@ void gen_king(board_state* board) {
         
         //excludes curr color board
         uint64_t moves = precomp_king & ~(curr_color_board);
-        
         add_legal(board, moves, square);
 
         king &= ~(1ULL << square);
+    }
+
+}
+
+void gen_bishop(board_state* board) {
+    const uint64_t H_FILE   = 0x8080808080808080ULL;
+    const uint64_t A_FILE   = 0x0101010101010101ULL;
+    const uint64_t TOP_RANK = 0xFF00000000000000ULL;
+    const uint64_t BOT_RANK = 0x00000000000000FFULL;
+
+    const int dirs[4] = {9, -7, -9, 7};
+    const uint64_t dir_rules[4] = {
+        TOP_RANK | H_FILE,
+        BOT_RANK | H_FILE,
+        BOT_RANK | A_FILE,
+        TOP_RANK | A_FILE,
+    };
+
+    uint64_t bishop           = board->pieces[board->turn][BISHOP];
+    uint64_t opposition       = get_opposite_board(board, !board->turn);
+    uint64_t full_board       = get_full_board(board);
+    uint64_t curr_color_board = full_board & ~opposition;
+    
+    while (bishop) {
+        int square = get_piece_square(bishop);
+
+        uint64_t attacks = 0;
+
+        for (int dir = 0; dir < 4;dir++) {
+            uint64_t n_square = 1ULL << square;
+            uint64_t rule = dir_rules[dir];
+
+            if (n_square & rule) continue;
+
+            for (int step = 0; step < 7; step++) {
+
+                if (dirs[dir] > 0) {
+                    n_square <<= dirs[dir];
+                }else {
+                    n_square >>= (-dirs[dir]);
+                }
+
+                //stop at same color piece
+                if (n_square & curr_color_board) break;
+                
+                //include curr square as taking were enemy piece
+                attacks |= n_square;
+
+                if (n_square & opposition) break;
+
+                if (n_square & rule) break;
+
+            }
+        }
+        add_legal(board, attacks, square);
+
+        bishop &= ~(1ULL << square);
     }
 
 }
