@@ -13,12 +13,12 @@
 */
 void gen(board_state* board);
 
-void gen_knight(board_state* board);
-void gen_bishop(board_state* board);
-void gen_king(board_state* board);
-void gen_queen(board_state* board);
-void gen_rook(board_state* board, uint64_t full_board);
-void gen_pawn(board_state* board);
+void gen_knight(board_state*   board);
+void gen_bishop(board_state*   board);
+void gen_king(board_state*     board);
+void gen_queen(board_state*    board);
+void gen_rook(board_state*     board);
+void gen_pawn(board_state*     board);
 void gen_no_piece(board_state* board);
 
 void add_legal(board_state* board, uint64_t piece, uint64_t source);

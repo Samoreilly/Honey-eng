@@ -3,6 +3,11 @@
 #include <stdint.h>
 
 
+const uint64_t H_FILE   = 0x8080808080808080ULL;
+const uint64_t A_FILE   = 0x0101010101010101ULL;
+const uint64_t TOP_RANK = 0xFF00000000000000ULL;
+const uint64_t BOT_RANK = 0xFFULL;
+
 #define DIRECTIONS 4
 int directions[4] = {-8, 8, -1, 1};
 
@@ -18,15 +23,15 @@ const int KNIGHT_OFFSETS[8] = {
    -17   
 };
 
-typedef void (*move_gen)(board_state*, uint64_t);
+typedef void (*move_gen)(board_state*);
 const move_gen generator_table[8] = {
     gen_pawn,
-    /* gen_knight, */
-    /* gen_bishop, */
-    gen_rook
-    /* gen_queen, */
-    /* gen_king, */
-    /* gen_no_piece */
+    gen_knight,
+    gen_bishop,
+    gen_rook,
+    gen_queen,
+    gen_king,
+    gen_no_piece
 };
 
 /*
@@ -39,60 +44,19 @@ uint64_t get_piece_square(uint64_t bitboard) {
 void gen(board_state* board) {
     uint64_t full_board = get_full_board(board);
     for(int i = 0;i < 7;i++) {
-        generator_table[i](board, full_board);
-    }
-
-}
-
-uint64_t rook_attack_mask(uint64_t rook_board, uint64_t full_board) {
-    uint64_t square = get_piece_square(rook_board);
-    uint64_t attacks = 0;
-    
-    for(size_t i = 0; i < DIRECTIONS; i++) {
-        int step = directions[i];
-        uint64_t dir_sq = square + step;
-        
-        while(dir_sq < 64) {
-            int prev_file = (dir_sq - step) % 8;
-            int curr_file = dir_sq % 8;
-            
-            //check if dir_sq file is diff from prev
-            if(abs(curr_file - prev_file) > 1) break;
-            
-            attacks |= (1ULL << dir_sq);
-            
-            //collision
-            if((1ULL << dir_sq) & full_board) break;
-            
-            dir_sq += step;
-        }
-    }
-
-    return attacks;
-}
-
-void gen_rook(board_state* board, uint64_t full_board) {
-    
-    for(int i = 0;i < N_ROOKS;i++) {
-        
-        uint64_t rook = board->pieces[board->turn][ROOK];
-        uint64_t rook_attacks = rook_attack_mask(rook, full_board);
-
+        generator_table[i](board);
     }
 
 }
 
 void gen_pawn(board_state* board) {
 
-    const uint64_t TOP_RANK = 0xFF00000000000000;
-    const uint64_t BOTTOM_RANK = 0xFF;
-
     uint64_t pawns = board->pieces[board->turn][PAWN];
     uint64_t enemy = get_opposite_board(board, !board->turn); 
     uint64_t full_board = get_full_board(board);
 
     const int step = board->turn == WHITE ? 8 : -8;
-    const uint64_t rank = board->turn == WHITE ? TOP_RANK : BOTTOM_RANK;
+    const uint64_t rank = board->turn == WHITE ? TOP_RANK : BOT_RANK;
 
     //TODO: add array of counters to track number of pieces per piece-type
     while(pawns) {
@@ -169,10 +133,6 @@ void gen_king(board_state* board) {
 }
 
 void gen_bishop(board_state* board) {
-    const uint64_t H_FILE   = 0x8080808080808080ULL;
-    const uint64_t A_FILE   = 0x0101010101010101ULL;
-    const uint64_t TOP_RANK = 0xFF00000000000000ULL;
-    const uint64_t BOT_RANK = 0x00000000000000FFULL;
 
     const int dirs[4] = {9, -7, -9, 7};
     const uint64_t dir_rules[4] = {
@@ -198,7 +158,7 @@ void gen_bishop(board_state* board) {
 
             if (n_square & rule) continue;
 
-            for (int step = 0; step < 7; step++) {
+            for (int step = 0; step < 7;step++) {
 
                 if (dirs[dir] > 0) {
                     n_square <<= dirs[dir];
@@ -218,6 +178,7 @@ void gen_bishop(board_state* board) {
 
             }
         }
+
         add_legal(board, attacks, square);
 
         bishop &= ~(1ULL << square);
@@ -225,21 +186,111 @@ void gen_bishop(board_state* board) {
 
 }
 
-/* void gen_pawn(board_state *board) { */
+void gen_rook(board_state* board) {
 
-/* } */
+    const int dirs[4] = {8, -8, 1, -1};
+    const uint64_t dir_rules[4] = {
+        TOP_RANK,
+        BOT_RANK,
+        H_FILE,
+        A_FILE,
+    };
 
-/* void gen_bishop(board_state *board) { */
+    uint64_t rook             = board->pieces[board->turn][ROOK];
+    uint64_t opposition       = get_opposite_board(board, !board->turn);
+    uint64_t full_board       = get_full_board(board);
+    uint64_t curr_color_board = full_board & ~opposition;
 
-/* } */
+    while(rook) {
+        
+        int square = get_piece_square(rook);
+        uint64_t attacks = 0;
 
-/* void gen_queen(board_state *board) { */
+        for(int dir = 0;dir < 4;dir++) {
+            uint64_t n_square = (1ULL << square);
 
-/* } */
+            //already on the file/rank in the direction its moving, so skip
+            if(n_square & dir_rules[dir]) continue;
 
-/* void gen_king(board_state *board) { */
+            for(int step = 0;step < 7;step++) {
+                
+                if(dirs[dir] > 0) {
+                    n_square <<= dirs[dir];
+                }else {
+                    n_square >>= (-dirs[dir]);
+                }
+                
+                if(n_square & curr_color_board) break;
 
-/* } */
+                attacks |= n_square;
+
+                if((n_square & opposition) || (n_square & dir_rules[dir])) break;
+            
+            }
+        }
+
+        add_legal(board, attacks, square);
+        
+        rook &= ~(1ULL << square);
+
+    }
+ 
+
+}
+
+void gen_queen(board_state* board) {
+
+    const int dirs[8] = {9, -7, -9, 7, 8, -8, 1, -1};
+    const uint64_t dir_rules[8] = {
+        TOP_RANK | H_FILE,
+        BOT_RANK | H_FILE,
+        BOT_RANK | A_FILE,
+        TOP_RANK | A_FILE,
+        TOP_RANK,
+        BOT_RANK,
+        H_FILE,
+        A_FILE
+    };
+
+    uint64_t queen            = board->pieces[board->turn][QUEEN];
+    uint64_t opposition       = get_opposite_board(board, !board->turn);
+    uint64_t full_board       = get_full_board(board);
+    uint64_t curr_color_board = full_board & ~opposition;
+
+    while(queen) {
+        
+        int square = get_piece_square(queen);
+        uint64_t attacks = 0;
+
+        for(int dir = 0;dir < 8;dir++) {
+            uint64_t n_square = (1ULL << square);
+
+            if(n_square & dir_rules[dir]) continue;
+
+            for(int step = 0;step < 7;step++) {
+
+                if(dir_rules[dir] > 0) {
+                    n_square <<= dirs[dir];
+                }else {
+                    n_square >>= (-dirs[dir]);
+                }
+
+                if(n_square & curr_color_board) break;
+
+                attacks |= n_square;
+                
+                if((n_square & opposition) || (n_square & dir_rules[dir])) break;
+            
+            }
+        }
+
+        add_legal(board, attacks, square);
+        
+        queen &= ~(1ULL << square);
+        
+    }
+
+}
 
 /* void gen_no_piece(board_state board) { */
 /*     printf("Failed"); */
